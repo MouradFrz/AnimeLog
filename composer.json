@@ -1,0 +1,15 @@
+{
+    "name": "administrator/anime-log",
+    "autoload": {
+        "psr-4": {
+            "src\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mourad Yaou",
+            "email": "91010360+MouradFrz@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}
