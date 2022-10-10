@@ -1,3 +1,36 @@
+<?php
+require __DIR__ . '/../vendor/autoload.php';
+session_start();
+
+use src\Utilities\SessionStatus;
+use src\Utilities\Database;
+use src\Models\User;
+use src\Controllers\UserController;
+
+SessionStatus::RedirectIfLoggedIn();
+
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
+    $user = new User($_POST['email'], $_POST['password'], $_POST['password_confirm']);
+    if (!UserController::completeFields($user)) {
+        $error = "All fields are required.";
+    } elseif (!UserController::validateEmailFormat($user)) {
+        $error = "Invalide e-mail address.";
+    } elseif (!UserController::validatePassword($user)) {
+        $error = "The password must contain at least one uppercase letter, lowercase letter and a number. <br>The password must be at least 6 characters long.";
+    } elseif (!UserController::validateConfirm($user)) {
+        $error = "Password and confirmation don't match.";
+    } elseif (!UserController::validateTakenEmail($user)) {
+        $error = "Email is already taken.";
+    } else {
+        UserController::createNewUser($user);
+        $_SESSION['register_success'] = 'success';
+        header('Location: login.php');
+    }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,21 +45,24 @@
 
 <body class="bg-light">
     <div class="wrapper">
-        <form>
+        <?php if (isset($error)) {
+            echo '<p>' . $error . '</p>';
+        } ?>
+        <form method="POST" action="">
             <h1 class="text-center">Register</h1>
             <div class="form-outline mb-4">
-                <label class="form-label" for="form2Example1">Email address</label>
-                <input type="email" id="form2Example1" class="form-control" />
+                <label class="form-label">Email address</label>
+                <input type="text" name="email" class="form-control" />
             </div>
             <div class="form-outline mb-4">
-                <label class="form-label" for="form2Example2">Password</label>
-                <input type="password" id="form2Example2" class="form-control" />
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" />
             </div>
             <div class="form-outline mb-4">
                 <label class="form-label">Confirm Password</label>
-                <input type="password"  class="form-control" />
+                <input type="password" name="password_confirm" class="form-control" />
             </div>
-            <button type="button" class="btn btn-primary btn-block mb-4">Register</button>
+            <button type="submit" class="btn btn-primary btn-block mb-4">Register</button>
             <div class="text-center">
                 <p>Already have an account? <a href="login.php">Login</a></p>
             </div>

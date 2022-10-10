@@ -1,3 +1,20 @@
+<?php
+require __DIR__ . '/../vendor/autoload.php';
+session_start();
+
+use src\Utilities\SessionStatus;
+use src\Controllers\UserController;
+SessionStatus::RedirectIfLoggedIn();
+
+if($_SERVER['REQUEST_METHOD']==="POST"){
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $result = UserController::attemptLogin($email,$password);
+    if($result){
+        header('Location: index.php');
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,17 +29,26 @@
 
 <body class="bg-light">
     <div class="wrapper">
-        <form>
+        <?php
+        if (isset($_SESSION['register_success'])) {
+            echo '<p>Registered Successfully</p>';
+            unset($_SESSION['register_success']);
+        }
+        if(isset($result) && !$result){
+            echo '<p>Invalide credentials.</p>';
+        }
+        ?>
+        <form method="POST" action="">
             <h1 class="text-center">Login</h1>
             <div class="form-outline mb-4">
-                <label class="form-label" for="form2Example1">Email address</label>
-                <input type="email" id="form2Example1" class="form-control" />
+                <label class="form-label">Email address</label>
+                <input type="email" name="email" class="form-control" />
             </div>
             <div class="form-outline mb-4">
-                <label class="form-label" for="form2Example2">Password</label>
-                <input type="password" id="form2Example2" class="form-control" />
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" />
             </div>
-            <button type="button" class="btn btn-primary btn-block mb-4">Sign in</button>
+            <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
             <div class="text-center">
                 <p>Not a member? <a href="register.php">Register</a></p>
             </div>

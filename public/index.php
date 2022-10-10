@@ -1,5 +1,9 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
+session_start();
+
+use src\Utilities\SessionStatus;
+
 
 ?>
 
@@ -13,6 +17,7 @@ require __DIR__ . '/../vendor/autoload.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AnimeLog</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/index.css">
 </head>
 
@@ -27,14 +32,21 @@ require __DIR__ . '/../vendor/autoload.php';
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-            <form class="d-flex" style="margin:auto;">
+                <form class="d-flex" style="margin:auto;">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <button class="btn btn-success " type="submit"><i class="bi bi-search"></i></button>
                 </form>
-                <ul class="navbar-nav">
-                    <a href="login.php" class="mx-2 btn btn-success btn-outline">Login</a>
-                    <a href="register.php" class="btn btn-outline-success">Register</a>
-                </ul>
+                <?php if (!isset($_SESSION['loggedin'])) { ?>
+                    <ul class="navbar-nav">
+                        <a href="login.php" class="mx-2 btn btn-success btn-outline btn-sm">Login</a>
+                        <a href="register.php" class="btn btn-outline-success btn-sm">Register</a>
+                    </ul>
+                <?php } else { ?>
+                    <div class="d-flex align-items-center" style="gap:8px">
+                    <p style="font-size:0.7rem ;margin:0;"><?= $_SESSION['loggedin'] ?></p>
+                    <a href="logout.php" class="btn btn-outline-danger btn-sm">Logout</a>
+                    </div>
+                <?php } ?>
             </div>
         </div>
     </nav>
@@ -86,13 +98,13 @@ require __DIR__ . '/../vendor/autoload.php';
             </div>
         </section>
     </main>
-<footer class="text-center text-lg-start bg-light text-muted">
-  
-  <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-    © 2022 Copyright:
-    <a class="text-reset fw-bold" href="https://github.com/MouradFrz">Yaou Mourad</a>
-  </div>
-</footer>
+    <footer class="text-center text-lg-start bg-light text-muted">
+
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+            © 2022 Copyright:
+            <a class="text-reset fw-bold" href="https://github.com/MouradFrz">Yaou Mourad</a>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 
