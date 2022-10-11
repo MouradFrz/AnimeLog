@@ -7,7 +7,7 @@ use src\Utilities\Database;
 use src\Models\User;
 use src\Controllers\UserController;
 
-SessionStatus::RedirectIfLoggedIn();
+SessionStatus::RedirectIfLoggedIn('user');
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $user = new User($_POST['email'], $_POST['password'], $_POST['password_confirm']);

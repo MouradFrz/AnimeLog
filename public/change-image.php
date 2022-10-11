@@ -4,7 +4,8 @@ session_start();
 
 use src\Utilities\SessionStatus;
 use src\Controllers\UserController;
-SessionStatus::RedirectIfNotLoggedIn();
+
+SessionStatus::RedirectIfNotLoggedIn('user');
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $image_parts = explode(";base64,", $_POST['image']);

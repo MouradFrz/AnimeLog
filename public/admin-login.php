@@ -3,15 +3,15 @@ require __DIR__ . '/../vendor/autoload.php';
 session_start();
 
 use src\Utilities\SessionStatus;
-use src\Controllers\UserController;
-SessionStatus::RedirectIfLoggedIn('user');
+use src\Controllers\AdminController;
+SessionStatus::RedirectIfLoggedIn('admin');
 
 if($_SERVER['REQUEST_METHOD']==="POST"){
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $result = UserController::attemptLogin($email,$password);
+    $result = AdminController::attemptLogin($email,$password);
     if($result){
-        header('Location: index.php');
+        header('Location: admin-home.php');
     }
 }
 ?>
@@ -30,10 +30,6 @@ if($_SERVER['REQUEST_METHOD']==="POST"){
 <body class="bg-light">
     <div class="wrapper">
         <?php
-        if (isset($_SESSION['register_success'])) {
-            echo '<p>Registered Successfully</p>';
-            unset($_SESSION['register_success']);
-        }
         if(isset($result) && !$result){
             echo '<p>Invalide credentials.</p>';
         }
