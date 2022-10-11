@@ -1,3 +1,25 @@
 .card {
   margin: auto;
 }
+
+.profile-image {
+  position: relative;
+  border-radius: 50%;
+}
+.profile-image span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0);
+}
+.profile-image span:hover {
+  background-color: rgba(0, 0, 0, 0.108);
+}
+.profile-image img {
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
