@@ -34,30 +34,32 @@ class UserController
         $stmt = $pdo->query('SELECT * FROM users');
         $results = $stmt->fetchAll(PDO::FETCH_OBJ);
         $pdo = NULL;
-        foreach($results as $row){
-            if($row->email === $user->getEmail()){
+        foreach ($results as $row) {
+            if ($row->email === $user->getEmail()) {
                 return false;
             }
         }
         return true;
     }
-    public static function createNewUser(User $user):void{
+    public static function createNewUser(User $user): void
+    {
         $pdo = Database::connect();
-        $password = password_hash($user->getPassword(),PASSWORD_DEFAULT);
+        $password = password_hash($user->getPassword(), PASSWORD_DEFAULT);
         $email = $user->getEmail();
         $stmt = $pdo->prepare("INSERT INTO users (email,password) VALUES ('$email','$password')");
         $stmt->execute();
         $pdo = NULL;
     }
 
-    public static function attemptLogin($email,$password){
+    public static function attemptLogin($email, $password)
+    {
         $pdo = Database::connect();
         $stmt = $pdo->query('SELECT * FROM users');
         $results = $stmt->fetchAll(PDO::FETCH_OBJ);
-        foreach($results as $row){
-            if($row->email === $email){
-                if(password_verify($password,$row->password)){
-                    $_SESSION['loggedin']=$row->email;
+        foreach ($results as $row) {
+            if ($row->email === $email) {
+                if (password_verify($password, $row->password)) {
+                    $_SESSION['loggedin'] = $row->email;
                     return true;
                 }
                 return false;
