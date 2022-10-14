@@ -1,17 +1,22 @@
 <?php
 
-
-require __DIR__ . '/../vendor/autoload.php';
-
 use src\Controllers\BlogController;
 use src\Utilities\SessionStatus;
-use src\Models\Blog;
 
+require __DIR__ . '/../vendor/autoload.php';
 session_start();
-$blog = new Blog();
-
 SessionStatus::RedirectIfNotLoggedIn('admin');
-$blogs = BlogController::getAllBlogs();
+if (!isset($_GET['blog'])) {
+    echo 'invalid url';
+    die;
+}
+$blogid = $_GET['blog'];
+if (!BlogController::blogExists($blogid)) {
+    echo 'invalid blog id';
+    die;
+}
+$blog = BlogController::getBlogInfo($blogid);
+
 ?>
 
 <!DOCTYPE html>
@@ -24,11 +29,6 @@ $blogs = BlogController::getAllBlogs();
     <title>Blogs Management</title>
     <link href="assets/css/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="assets/css/admin-home.css" rel="stylesheet">
-    <style>
-        .card {
-            margin: auto;
-        }
-    </style>
 </head>
 
 <body id="page-top">
@@ -50,63 +50,20 @@ $blogs = BlogController::getAllBlogs();
                     <span>Logout</span>
                 </a>
             </li>
-            <!-- <hr class="sidebar-divider">
-            <div class="sidebar-heading">
-                Interface
-            </div>
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                    <i class="fas fa-fw fa-cog"></i>
-                    <span>Components</span>
-                </a>
-                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="buttons.html">Buttons</a>
-                        <a class="collapse-item" href="cards.html">Cards</a>
-                    </div>
-                </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="charts.html">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Charts</span></a>
-            </li>
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div> -->
         </ul>
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
                 <nav class="p-3">
-                    <a href="admin-add-blog.php" class="btn-primary btn">Create a new blog</a>
+                    <form action="admin-delete-blog.php" method="post">
+                        <input type="hidden" name="blogid" value="<?= $blogid ?>">
+                        <button type="submit" class="btn-danger btn">Delete this blog</button>
+                    </form>
                 </nav>
                 <section class="mb-5">
                     <div class="container">
-                        <?php if (isset($_SESSION['message'])) { ?>
-                            <p><?= $_SESSION['message'] ?></p>
-                        <?php unset($_SESSION['message']);
-                        } ?>
-                        <h1 class="text-center mb-3">My Blogs</h1>
-
-                        <div class="row mb-5">
-                            <?php foreach ($blogs as $index => $blog) { ?>
-                                <?php if ($index % 3 === 0 && $index !== 0) { ?>
-                        </div>
-                        <div class="row mb-5">
-                        <?php } ?>
-                        <div class="col">
-                            <div class="card" style="width: 18rem;">
-                                <img src="assets/blog-images/<?= $blog->getImage() ?>" class="card-img-top" alt="">
-                                <div class="card-body">
-                                    <h5 class="card-title"><?= $blog->getTitle() ?></h5>
-                                    <p class="card-text"><?= $blog->getHeadline() ?></p>
-                                    <a href="admin-blog-details.php?blog=<?= $blog->getId() ?>" class="btn btn-primary">Details</a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php } ?>
-                        </div>
+                        <h1 class="mb-3">Blog : <?= $blog->getTitle() ?></h1>
+                        <p><?= $blog->getHeadline() ?></p>
+                        <img width="60%" src="assets/blog-images/<?= $blog->getImage() ?>" alt="">
                     </div>
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
