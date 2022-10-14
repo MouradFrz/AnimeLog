@@ -91,4 +91,19 @@ class BlogController
         $stmt->execute([$id]);
         $pdo = null;
     }
+    public static function editBlog($blogid,Blog $blog){
+        $pdo = Database::connect();
+
+        $image = $blog->getImage();
+        $tmp = explode('/', $image['type']);
+        $name = rand(0, 2465472462) . time() . '.' . end($tmp);
+        move_uploaded_file($image['tmp_name'], 'assets/blog-images/' . $name);
+        // echo $blog->getTitle().'<br>';
+        // echo $blog->getHeadline().'<br>';
+        // echo $name.'<br>';
+        // echo date("Y-m-d H:i:s").'<br>';
+        // echo $blogid.'<br>';
+        $stmt = $pdo->prepare('UPDATE posts set title = ? , headline = ? , image = ? , updated_at = ? WHERE id=?');
+        $stmt->execute([$blog->getTitle(),$blog->getHeadline(),$name,date("Y-m-d H:i:s"),$blogid]);
+    }
 }
