@@ -47,4 +47,11 @@ class TagController
         $stmt->execute([$blogid, $tagid]);
         $pdo = NULL;
     }
+    public static function createAndAdd($blogid,$tagname){
+        $pdo = Database::connect();
+        $stmt = $pdo->prepare('INSERT INTO tags (name) values (?)');
+        $stmt->execute([$tagname]);
+        self::addTagToBlog($blogid,$pdo->lastInsertId());
+        $pdo = NULL;
+    }
 }

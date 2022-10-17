@@ -285,44 +285,83 @@ $sections = SectionController::loadSections($blogid);
                     },
                     success: (res) => {
                         searchResult.textContent = ''
-                        JSON.parse(res).forEach((tag) => {
-                            let p = document.createElement('p')
-                            p.textContent = tag.name
-                            p.setAttribute('data-tagid', tag.id)
+                        if (JSON.parse(res).length != 0) {
+                            JSON.parse(res).forEach((tag) => {
+                                let p = document.createElement('p')
+                                p.textContent = tag.name
+                                p.setAttribute('data-tagid', tag.id)
+                                p.addEventListener('click', () => {
+                                    $.ajax({
+                                        url: 'add-tag-to-blog.php',
+                                        type: 'POST',
+                                        data: {
+                                            tagid: p.dataset.tagid,
+                                            blogid: <?= $blogid ?>
+                                        },
+                                        success: () => {
+                                            p.parentElement.removeChild(p)
+                                            let temp = document.createElement('span')
+                                            temp.innerHTML = `<p class = "d-inline">${p.textContent}</p>`
+                                            temp.classList.add('tag')
+                                            temp.classList.add('me-2')
+                                            temp.setAttribute('data-tagid', p.dataset.tagid)
+                                            temp.addEventListener('click', () => {
+                                                $.ajax({
+                                                    url: 'remove-tag.php',
+                                                    type: 'post',
+                                                    data: {
+                                                        tagid: temp.dataset.tagid,
+                                                        blogid: <?= $blogid ?>
+                                                    },
+                                                    success: () => {
+                                                        temp.parentElement.removeChild(temp);
+                                                    },
+                                                })
+                                            })
+                                            existingTags.appendChild(temp)
+                                        }
+                                    })
+                                })
+                                searchResult.appendChild(p)
+                            })
+                        } else {
+                            p = document.createElement('p')
+                            searchResult.appendChild(p)
+                            p.textContent = 'Create and add new tag : ' + tagSearchInput.value
                             p.addEventListener('click', () => {
                                 $.ajax({
-                                    url: 'add-tag-to-blog.php',
+                                    url: 'create-and-add-tag.php',
                                     type: 'POST',
                                     data: {
-                                        tagid: p.dataset.tagid,
+                                        tagname: tagSearchInput.value,
                                         blogid: <?= $blogid ?>
                                     },
-                                    success: () => {
+                                    success: (res) => {
                                         p.parentElement.removeChild(p)
                                         let temp = document.createElement('span')
-                                        temp.innerHTML = `<p class = "d-inline">${p.textContent}</p>`
-                                        temp.classList.add('tag')
-                                        temp.classList.add('me-2')
-                                        temp.setAttribute('data-tagid', p.dataset.tagid)
-                                        temp.addEventListener('click', () => {
-                                            $.ajax({
-                                                url: 'remove-tag.php',
-                                                type: 'post',
-                                                data: {
-                                                    tagid: temp.dataset.tagid,
-                                                    blogid: <?= $blogid ?>
-                                                },
-                                                success: () => {
-                                                    temp.parentElement.removeChild(temp);
-                                                },
+                                            temp.innerHTML = `<p class = "d-inline">${res}</p>`
+                                            temp.classList.add('tag')
+                                            temp.classList.add('me-2')
+                                            temp.setAttribute('data-tagid', p.dataset.tagid)
+                                            temp.addEventListener('click', () => {
+                                                $.ajax({
+                                                    url: 'remove-tag.php',
+                                                    type: 'post',
+                                                    data: {
+                                                        tagid: temp.dataset.tagid,
+                                                        blogid: <?= $blogid ?>
+                                                    },
+                                                    success: () => {
+                                                        temp.parentElement.removeChild(temp);
+                                                    },
+                                                })
                                             })
-                                        })
-                                        existingTags.appendChild(temp)
+                                            existingTags.appendChild(temp)
                                     }
                                 })
                             })
-                            searchResult.appendChild(p)
-                        })
+
+                        }
                     }
                 })
                 searchResult.classList.add('show')
