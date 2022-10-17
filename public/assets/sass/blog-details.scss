@@ -1,0 +1,40 @@
+.tag {
+    border: 1px solid rgb(102, 102, 250);
+    background-color: rgb(240, 240, 255);
+    cursor: pointer;
+    transition: 0.1s ease;
+    padding: 5px 10px;
+    border-radius: 3px;
+    &:hover {
+        background-color: rgb(189, 189, 255);
+    }
+}
+.search-div {
+    position: relative;
+    #add-tag-input:focus {
+        & ~ .search-result.show {
+            display: block;
+        }
+    }
+    .search-result:hover {
+        display: block;
+    }
+}
+.search-result {
+    position: absolute;
+    display: none;
+    width: 100%;
+    top: 40px;
+    border: 1px solid #d1d3e2;
+    border-radius: 0.35rem;
+    background-color: #fff;
+    p {
+        margin: 0;
+        padding: 8px 14px;
+        transition: 0.05s linear;
+        cursor: pointer;
+        &:hover {
+            background-color: #d1d3e2;
+        }
+    }
+}

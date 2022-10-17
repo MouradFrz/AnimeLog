@@ -1,0 +1,40 @@
+.tag {
+  border: 1px solid rgb(102, 102, 250);
+  background-color: rgb(240, 240, 255);
+  cursor: pointer;
+  transition: 0.1s ease;
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+.tag:hover {
+  background-color: rgb(189, 189, 255);
+}
+
+.search-div {
+  position: relative;
+}
+.search-div #add-tag-input:focus ~ .search-result.show {
+  display: block;
+}
+.search-div .search-result:hover {
+  display: block;
+}
+
+.search-result {
+  position: absolute;
+  display: none;
+  width: 100%;
+  top: 40px;
+  border: 1px solid #d1d3e2;
+  border-radius: 0.35rem;
+  background-color: #fff;
+}
+.search-result p {
+  margin: 0;
+  padding: 8px 14px;
+  transition: 0.05s linear;
+  cursor: pointer;
+}
+.search-result p:hover {
+  background-color: #d1d3e2;
+}

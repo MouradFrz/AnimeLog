@@ -2,6 +2,7 @@
 
 use src\Controllers\BlogController;
 use src\Controllers\SectionController;
+use src\Controllers\TagController;
 use src\Utilities\SessionStatus;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -16,6 +17,7 @@ if (!BlogController::blogExists($blogid)) {
     echo 'invalid blog id';
     die;
 }
+$tags = TagController::fetchTagsForBlog($blogid);
 $blog = BlogController::getBlogInfo($blogid);
 $sections = SectionController::loadSections($blogid);
 
@@ -33,7 +35,7 @@ $sections = SectionController::loadSections($blogid);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link href="assets/css/admin-home.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="assets/css/blog-details.css">
 </head>
 
 <body id="page-top">
@@ -180,6 +182,18 @@ $sections = SectionController::loadSections($blogid);
                 </div>
                 <section class="mb-5">
                     <div class="container">
+                        <div class=" mt-3 existing-tags">
+                            <?php foreach ($tags as $tag) { ?>
+                                <span class="tag me-2" data-tagid="<?= $tag->id ?>">
+                                    <p class="d-inline"><?= $tag->name ?></p>
+                                </span>
+                            <?php } ?>
+                        </div>
+                        <div class="search-div">
+                            <input type="text" name="" placeholder="Tagname..." class="form-control mt-3" id="add-tag-input">
+                            <div class="search-result">
+                            </div>
+                        </div>
                         <h1 class="mb-3">Blog : <?= $blog->getTitle() ?></h1>
                         <p><?= $blog->getHeadline() ?></p>
                         <img width="60%" src="assets/blog-images/<?= $blog->getImage() ?>" alt="">
@@ -232,6 +246,89 @@ $sections = SectionController::loadSections($blogid);
             e.addEventListener('click', () => {
                 sectionDeleteInput.value = e.dataset.sectionid
             })
+        })
+    </script>
+    <script>
+        const tags = document.querySelectorAll('.tag')
+        tags.forEach((e) => {
+            e.addEventListener('click', () => {
+                $.ajax({
+                    url: 'remove-tag.php',
+                    type: 'post',
+                    data: {
+                        tagid: e.dataset.tagid,
+                        blogid: <?= $blogid ?>
+                    },
+                    success: () => {
+                        e.parentElement.removeChild(e);
+                    },
+                })
+            })
+        })
+    </script>
+    <script>
+        const tagSearchInput = document.querySelector('#add-tag-input')
+        const searchResult = document.querySelector('.search-result')
+        const existingTags = document.querySelector('.existing-tags')
+
+        let searchString = tagSearchInput.value
+
+        tagSearchInput.addEventListener('keyup', () => {
+            searchString = tagSearchInput.value
+            if (searchString.length > 1) {
+                $.ajax({
+                    url: 'search-tags.php',
+                    type: 'POST',
+                    data: {
+                        blogid: <?= $blogid ?>,
+                        keyword: searchString
+                    },
+                    success: (res) => {
+                        searchResult.textContent = ''
+                        JSON.parse(res).forEach((tag) => {
+                            let p = document.createElement('p')
+                            p.textContent = tag.name
+                            p.setAttribute('data-tagid', tag.id)
+                            p.addEventListener('click', () => {
+                                $.ajax({
+                                    url: 'add-tag-to-blog.php',
+                                    type: 'POST',
+                                    data: {
+                                        tagid: p.dataset.tagid,
+                                        blogid: <?= $blogid ?>
+                                    },
+                                    success: () => {
+                                        p.parentElement.removeChild(p)
+                                        let temp = document.createElement('span')
+                                        temp.innerHTML = `<p class = "d-inline">${p.textContent}</p>`
+                                        temp.classList.add('tag')
+                                        temp.classList.add('me-2')
+                                        temp.setAttribute('data-tagid', p.dataset.tagid)
+                                        temp.addEventListener('click', () => {
+                                            $.ajax({
+                                                url: 'remove-tag.php',
+                                                type: 'post',
+                                                data: {
+                                                    tagid: temp.dataset.tagid,
+                                                    blogid: <?= $blogid ?>
+                                                },
+                                                success: () => {
+                                                    temp.parentElement.removeChild(temp);
+                                                },
+                                            })
+                                        })
+                                        existingTags.appendChild(temp)
+                                    }
+                                })
+                            })
+                            searchResult.appendChild(p)
+                        })
+                    }
+                })
+                searchResult.classList.add('show')
+            } else {
+                searchResult.classList.remove('show')
+            }
         })
     </script>
 </body>
