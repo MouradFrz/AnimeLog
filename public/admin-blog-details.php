@@ -1,6 +1,7 @@
 <?php
 
 use src\Controllers\BlogController;
+use src\Controllers\SectionController;
 use src\Utilities\SessionStatus;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -16,6 +17,7 @@ if (!BlogController::blogExists($blogid)) {
     die;
 }
 $blog = BlogController::getBlogInfo($blogid);
+$sections = SectionController::loadSections($blogid);
 
 ?>
 
@@ -29,11 +31,61 @@ $blog = BlogController::getBlogInfo($blogid);
     <title>Blogs Management</title>
     <link href="assets/css/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link href="assets/css/admin-home.css" rel="stylesheet">
 
 </head>
 
 <body id="page-top">
+    <div class="modal fade" id="deleteSectionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="admin-delete-section.php" method="POST" id="delete-section">
+                        <p>Are you sure you want to delete this section?</p>
+                        <input type="hidden" name="blogid" value="<?= $blogid ?>">
+                        <input type="hidden" name="sectionid" id="section-delete-input">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" onclick="document.querySelector('#delete-section').submit()" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editSectionModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="admin-edit-section.php" method="POST" id="edit-section" enctype="multipart/form-data">
+                        <input type="hidden" name="blogid" value="<?= $blogid ?>">
+                        <input type="hidden" name="sectionid" id="section-edit-input">
+                        <label for="" class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" id="">
+                        <label for="" class="form-label">Paragraph</label>
+                        <textarea name="paragraph" id="" class="form-control"></textarea>
+                        <label for="" class="form-label">Image</label>
+                        <input type="file" class="form-control" accept="image/png, image/gif, image/jpeg" name="banner" id="">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" onclick="document.querySelector('#edit-section').submit()" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -42,8 +94,8 @@ $blog = BlogController::getBlogInfo($blogid);
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="admin-edit-blog.php" method="POST" id="edit-blog"  enctype="multipart/form-data">
-                        <input type="hidden" name="blogid" value="<?=$blogid?>">
+                    <form action="admin-edit-blog.php" method="POST" id="edit-blog" enctype="multipart/form-data">
+                        <input type="hidden" name="blogid" value="<?= $blogid ?>">
                         <label for="" class="form-label">Title</label>
                         <input type="text" class="form-control" name="title" id="">
                         <label for="" class="form-label">Headline</label>
@@ -55,6 +107,31 @@ $blog = BlogController::getBlogInfo($blogid);
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" onclick="document.querySelector('#edit-blog').submit()" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addSectionModal" tabindex="-1" aria-labelledby="addSectionModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add new section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="admin-create-section.php" method="POST" id="create-section" enctype="multipart/form-data">
+                        <input type="hidden" name="blogid" value="<?= $blogid ?>">
+                        <label for="" class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" id="">
+                        <label for="" class="form-label">Paragraph</label>
+                        <textarea name="paragraph" id="" class="form-control"></textarea>
+                        <label for="" class="form-label">Image</label>
+                        <input type="file" class="form-control" accept="image/png, image/gif, image/jpeg" name="banner" id="">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" onclick="document.querySelector('#create-section').submit()" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>
@@ -81,24 +158,44 @@ $blog = BlogController::getBlogInfo($blogid);
         <div id="content-wrapper" class="d-flex flex-column">
             <div id="content">
                 <div class="container">
-                <nav class="mt-2 d-flex">
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        Edit Blog
-                    </button>
-                    <form action="admin-delete-blog.php" method="post" class="">
-                        <input type="hidden" name="blogid" value="<?= $blogid ?>">
-                        <button type="submit" class="btn-danger btn">Delete this blog</button>
-                    </form>
-                </nav>
+                    <?php if (isset($_SESSION['message'])) { ?>
+                        <p><?= $_SESSION['message'] ?></p>
+                    <?php unset($_SESSION['message']);
+                    } ?>
+                    <nav class="mt-2 d-flex">
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Edit Blog
+                        </button>
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#addSectionModal">
+                            Add a new section
+                        </button>
+                        <form action="admin-delete-blog.php" method="post" class="">
+                            <input type="hidden" name="blogid" value="<?= $blogid ?>">
+                            <button type="submit" class="btn-danger btn">Delete this blog</button>
+                        </form>
+                    </nav>
                 </div>
                 <section class="mb-5">
                     <div class="container">
                         <h1 class="mb-3">Blog : <?= $blog->getTitle() ?></h1>
                         <p><?= $blog->getHeadline() ?></p>
                         <img width="60%" src="assets/blog-images/<?= $blog->getImage() ?>" alt="">
+                        <?php foreach ($sections as $section) { ?>
+                            <div class="section">
+                                <div class="section-buttons d-flex justify-content-between">
+                                    <h3 class="mb-3"><?= $section->getTitle() ?></h3>
+                                    <div class="section-params">
+                                        <button type="button" class="btn-outline btn-primary btn editsectionbutton" data-sectionid="<?= $section->getId() ?>" data-bs-toggle="modal" data-bs-target="#editSectionModal"><i class="bi bi-gear-fill"></i></button>
+                                        <button type="button" class="btn-outline btn-danger btn deletesectionbutton" data-sectionid="<?= $section->getId() ?>" data-bs-toggle="modal" data-bs-target="#deleteSectionModal"><i class="bi bi-trash-fill"></i></button>
+                                    </div>
+                                </div>
+                                <p><?= $section->getParagraph() ?></p>
+                                <img width="60%" src="assets/section-images/<?= $section->getImage() ?>" alt="">
+                            </div>
+                        <?php } ?>
                     </div>
                 </section>
             </div>
@@ -118,7 +215,25 @@ $blog = BlogController::getBlogInfo($blogid);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="assets/js/admin-home.js"></script>
+    <script>
+        const sectionEditInput = document.querySelector('#section-edit-input')
+        const editSectionButton = document.querySelectorAll('.editsectionbutton')
+        editSectionButton.forEach((e) => {
+            e.addEventListener('click', () => {
+                sectionEditInput.value = e.dataset.sectionid
+            })
+        })
+    </script>
 
+    <script>
+        const sectionDeleteInput = document.querySelector('#section-delete-input')
+        const deleteSectionButton = document.querySelectorAll('.deletesectionbutton')
+        deleteSectionButton.forEach((e) => {
+            e.addEventListener('click', () => {
+                sectionDeleteInput.value = e.dataset.sectionid
+            })
+        })
+    </script>
 </body>
 
 </html>

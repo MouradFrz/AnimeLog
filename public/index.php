@@ -94,7 +94,7 @@ use src\Utilities\SessionStatus;
                         <div class="profile-image">
                             <input type="file" name="image" class="image" style="display:none;">
                             <span id="trigger"></span>
-                            <img width="30" height="30" class="d-inline-block align-text-top" src="<?= 'assets/profile-images/'.$_SESSION['loggedin'].'.png' ?>" alt="">
+                            <img width="30" height="30" class="d-inline-block align-text-top" src="<?= 'assets/profile-images/' . $_SESSION['loggedin'] . '.png' ?>" alt="">
                         </div>
 
                         <p style="font-size:0.7rem ;margin:0;"><?= $_SESSION['loggedin'] ?></p>

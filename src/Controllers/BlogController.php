@@ -79,31 +79,35 @@ class BlogController
         $stmt->execute([$id]);
         $res = $stmt->fetchAll(PDO::FETCH_OBJ);
         $pdo = null;
-        if(count($res)){
+        if (count($res)) {
             return true;
         }
         return false;
     }
     public static function deleteBlog($id)
     {
+        if (file_exists('assets/blog-images/' . self::getBlogInfo($id)->getImage())) {
+            unlink('assets/blog-images/' . self::getBlogInfo($id)->getImage());
+        };
         $pdo = Database::connect();
         $stmt = $pdo->prepare('DELETE FROM posts WHERE id=?');
         $stmt->execute([$id]);
-        $pdo = null;
+        $pdo = NULL;
     }
-    public static function editBlog($blogid,Blog $blog){
+    public static function editBlog($blogid, Blog $blog)
+    {
         $pdo = Database::connect();
+        if (file_exists('assets/blog-images/' . self::getBlogInfo($blogid)->getImage())) {
+            unlink('assets/blog-images/' . self::getBlogInfo($blogid)->getImage());
+        };
 
         $image = $blog->getImage();
         $tmp = explode('/', $image['type']);
         $name = rand(0, 2465472462) . time() . '.' . end($tmp);
         move_uploaded_file($image['tmp_name'], 'assets/blog-images/' . $name);
-        // echo $blog->getTitle().'<br>';
-        // echo $blog->getHeadline().'<br>';
-        // echo $name.'<br>';
-        // echo date("Y-m-d H:i:s").'<br>';
-        // echo $blogid.'<br>';
+        
         $stmt = $pdo->prepare('UPDATE posts set title = ? , headline = ? , image = ? , updated_at = ? WHERE id=?');
-        $stmt->execute([$blog->getTitle(),$blog->getHeadline(),$name,date("Y-m-d H:i:s"),$blogid]);
+        $stmt->execute([$blog->getTitle(), $blog->getHeadline(), $name, date("Y-m-d H:i:s"), $blogid]);
+        $pdo = NULL;
     }
 }

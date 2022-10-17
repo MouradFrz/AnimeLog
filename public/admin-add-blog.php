@@ -8,7 +8,7 @@ require __DIR__ . '/../vendor/autoload.php';
 session_start();
 SessionStatus::RedirectIfNotLoggedIn('admin');
 
-if($_SERVER['REQUEST_METHOD']==="POST"){
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $title = $_POST['title'];
     $headline = $_POST['headline'];
     $image = $_FILES['banner'];
@@ -16,13 +16,12 @@ if($_SERVER['REQUEST_METHOD']==="POST"){
     $blog->setTitle($title);
     $blog->setHeadline($headline);
     $blog->setImage($image);
-    if(BlogController::validateBlog($blog)){
+    if (BlogController::validateBlog($blog)) {
         BlogController::createBlog($blog);
         $result = '';
-    }else{
+    } else {
         $error = 'Title and headline must be less than 240 chars.<br>All fields are required.';
     }
-
 }
 
 ?>
@@ -41,10 +40,10 @@ if($_SERVER['REQUEST_METHOD']==="POST"){
 <body class="bg-light">
     <div class="wrapper">
         <?php
-        if(isset($result) && !$result){
+        if (isset($result) && !$result) {
             echo '<p>Blog Created successfully</p>';
         }
-        if(isset($error)){
+        if (isset($error)) {
             echo $error;
         }
         ?>

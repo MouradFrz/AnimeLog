@@ -4,13 +4,14 @@ session_start();
 
 use src\Utilities\SessionStatus;
 use src\Controllers\AdminController;
+
 SessionStatus::RedirectIfLoggedIn('admin');
 
-if($_SERVER['REQUEST_METHOD']==="POST"){
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $result = AdminController::attemptLogin($email,$password);
-    if($result){
+    $result = AdminController::attemptLogin($email, $password);
+    if ($result) {
         header('Location: admin-home.php');
     }
 }
@@ -30,7 +31,7 @@ if($_SERVER['REQUEST_METHOD']==="POST"){
 <body class="bg-light">
     <div class="wrapper">
         <?php
-        if(isset($result) && !$result){
+        if (isset($result) && !$result) {
             echo '<p>Invalide credentials.</p>';
         }
         ?>

@@ -4,13 +4,14 @@ session_start();
 
 use src\Utilities\SessionStatus;
 use src\Controllers\UserController;
+
 SessionStatus::RedirectIfLoggedIn('user');
 
-if($_SERVER['REQUEST_METHOD']==="POST"){
+if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    $result = UserController::attemptLogin($email,$password);
-    if($result){
+    $result = UserController::attemptLogin($email, $password);
+    if ($result) {
         header('Location: index.php');
     }
 }
@@ -34,7 +35,7 @@ if($_SERVER['REQUEST_METHOD']==="POST"){
             echo '<p>Registered Successfully</p>';
             unset($_SESSION['register_success']);
         }
-        if(isset($result) && !$result){
+        if (isset($result) && !$result) {
             echo '<p>Invalide credentials.</p>';
         }
         ?>
