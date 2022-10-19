@@ -1,9 +1,11 @@
 <?php
+
+use src\Controllers\BlogController;
+
 require __DIR__ . '/../vendor/autoload.php';
 session_start();
 
-use src\Utilities\SessionStatus;
-
+$blogs = BlogController::getRandomBlogs();
 
 ?>
 
@@ -67,9 +69,6 @@ use src\Utilities\SessionStatus;
             </div>
         </div>
     </div>
-
-    </div>
-    </div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="#">
@@ -80,8 +79,8 @@ use src\Utilities\SessionStatus;
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                <form class="d-flex" style="margin:auto;">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex" method="GET" action="blog-search.php" style="margin:auto;">
+                    <input class="form-control me-2" name="keyword" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-success " type="submit"><i class="bi bi-search"></i></button>
                 </form>
                 <?php if (!isset($_SESSION['loggedin'])) { ?>
@@ -118,36 +117,19 @@ use src\Utilities\SessionStatus;
             <div class="container">
                 <h1 class="text-center mb-3">Trending topics</h1>
                 <div class="row">
-                    <div class="col">
+                    <?php foreach($blogs as $blog){?>
+                        <div class="col">
                         <div class="card" style="width: 18rem;">
-                            <img src="assets/images/placehold.jpg" class="card-img-top" alt="">
+                            <img src="assets/blog-images/<?=$blog->getImage()?>" class="card-img-top" alt="">
                             <div class="card-body">
-                                <h5 class="card-title">Card title</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
+                                <h5 class="card-title"><?=$blog->getTitle()?></h5>
+                                <p class="card-text"><?=$blog->getHeadline()?></p>
+                                <a href="blog.php?blog=<?=$blog->getId()?>" class="btn btn-primary">View More</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="card" style="width: 18rem;">
-                            <img src="assets/images/placehold.jpg" class="card-img-top" alt="">
-                            <div class="card-body">
-                                <h5 class="card-title">Card title</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card" style="width: 18rem;">
-                            <img src="assets/images/placehold.jpg" class="card-img-top" alt="">
-                            <div class="card-body">
-                                <h5 class="card-title">Card title</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                            </div>
-                        </div>
-                    </div>
+                    <?php }?>
+
                 </div>
             </div>
         </section>

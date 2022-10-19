@@ -110,4 +110,46 @@ class BlogController
         $stmt->execute([$blog->getTitle(), $blog->getHeadline(), $name, date("Y-m-d H:i:s"), $blogid]);
         $pdo = NULL;
     }
+    public static function getRandomBlogs(){
+        $pdo = Database::connect();
+        $stmt = $pdo->query('SELECT * FROM posts ORDER BY RAND() LIMIT 3');
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $toReturn = [];
+        foreach ($result as $row) {
+            $blog = new Blog();
+            $blog->setId($row->id);
+            $blog->setTitle($row->title);
+            $blog->setHeadline($row->headline);
+            $blog->setImage($row->image);
+            $blog->setCreatedAt($row->created_at);
+            $blog->setUpdatedAt($row->updated_at);
+            array_push($toReturn, $blog);
+        }
+        return $toReturn;
+    }
+
+    public static function searchBlogs($keyword){
+        $processedKeyword = str_replace(' ','|',$keyword);
+        $pdo = Database::connect();
+        $stmt = $pdo->prepare("SELECT * FROM posts 
+                                WHERE id IN (SELECT DISTINCT posts.id FROM posts
+                                            INNER JOIN sections ON posts.id = sections.blogid
+                                            WHERE posts.title REGEXP :keyword OR sections.title REGEXP :keyword 
+                                            OR headline REGEXP :keyword  OR paragraph REGEXP :keyword )");
+        $stmt->execute(['keyword'=>$processedKeyword]);
+        $result = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $toReturn = [];
+        foreach ($result as $row) {
+            $blog = new Blog();
+            $blog->setId($row->id);
+            $blog->setTitle($row->title);
+            $blog->setHeadline($row->headline);
+            $blog->setImage($row->image);
+            $blog->setCreatedAt($row->created_at);
+            $blog->setUpdatedAt($row->updated_at);
+            array_push($toReturn, $blog);
+        }
+        $pdo = NULL;
+        return $toReturn;
+    }
 }

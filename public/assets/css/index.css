@@ -1,5 +1,6 @@
 .card {
   margin: auto;
+  min-height: 100%;
 }
 
 .profile-image {
@@ -20,6 +21,63 @@
 }
 .profile-image img {
   border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.tag {
+  border: 1px solid rgb(102, 102, 250);
+  background-color: rgb(240, 240, 255);
+  display: inline-block;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: 0.1s ease;
+  padding: 5px 10px;
+  border-radius: 3px;
+}
+.tag:hover {
+  background-color: rgb(189, 189, 255);
+}
+
+.wrapper {
+  width: 75%;
+  padding: 25px 25px;
+  border: 1px solid rgb(185, 185, 185);
+  border-radius: 3px;
+  margin: 5px 0px;
+  box-shadow: 0px 0px 4px 0px rgba(255, 255, 255, 0.75);
+  -webkit-box-shadow: 0px 0px 4px 0px rgba(182, 182, 182, 0.75);
+  -moz-box-shadow: 0px 0px 4px 0px rgba(77, 77, 77, 0.75);
+}
+.wrapper img {
+  max-width: 100%;
+  max-height: 500px;
+}
+
+.section img {
+  max-width: 100%;
+  max-height: 500px;
+}
+
+.date {
+  font-size: 0.7rem;
+  color: gray;
+  margin: 0;
+}
+
+.blog-mini {
+  display: flex;
+  text-decoration: none;
+  color: black;
+  gap: 30px;
+  margin: 10px 0;
+}
+.blog-mini h1 {
+  font-size: 1.4rem;
+}
+.blog-mini img {
+  width: 100px;
+  height: 100px;
   -o-object-fit: cover;
      object-fit: cover;
 }
